@@ -21,6 +21,16 @@ router.use(authenticate, authorize(Role.TENANT));
  *     summary: Create Stripe payment intent for approved rental
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [rentalRequestId, provider]
+ *             properties:
+ *               rentalRequestId: { type: string, format: uuid, example: "dd4afb8b-d75e-4aa7-aeb3-5d1ab117fe81" }
+ *               provider: { type: string, enum: [STRIPE, SSLCOMMERZ], example: STRIPE }
  */
 router.post("/create", validate(createPaymentSchema), paymentController.create);
 
@@ -32,6 +42,16 @@ router.post("/create", validate(createPaymentSchema), paymentController.create);
  *     summary: Verify Stripe payment after client confirmation
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [paymentId, transactionId]
+ *             properties:
+ *               paymentId: { type: string, format: uuid }
+ *               transactionId: { type: string, example: "pi_3TrIiWR1g1J1QVrW0CNmYzb3" }
  */
 router.post("/confirm", validate(confirmPaymentSchema), paymentController.confirm);
 
@@ -41,6 +61,8 @@ router.post("/confirm", validate(confirmPaymentSchema), paymentController.confir
  *   get:
  *     tags: [Payments]
  *     summary: Get user's payment history
+ *     security:
+ *       - bearerAuth: []
  */
 router.get("/", paymentController.getAll);
 
@@ -50,6 +72,13 @@ router.get("/", paymentController.getAll);
  *   get:
  *     tags: [Payments]
  *     summary: Get payment details
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string, format: uuid }
  */
 router.get(
   "/:id",

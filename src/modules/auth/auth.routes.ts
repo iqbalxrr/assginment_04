@@ -37,6 +37,19 @@ router.post("/register", validate(registerSchema), authController.register);
  *   post:
  *     tags: [Auth]
  *     summary: Login user and get JWT token
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email: { type: string, example: tenant@rentnest.com }
+ *               password: { type: string, example: tenant123 }
+ *     responses:
+ *       200:
+ *         description: Login successful
  */
 router.post("/login", validate(loginSchema), authController.login);
 
