@@ -7,7 +7,7 @@ import * as propertyService from "../properties/property.service";
 import * as rentalService from "../rentals/rental.service";
 
 export const getUsers = asyncHandler(async (req: Request, res: Response) => {
-  const result = await adminService.getAllUsers(req.query as never);
+  const result = await adminService.getAllUsers((req.validatedQuery ?? req.query) as never);
   sendSuccess(res, 200, "Users retrieved successfully", result);
 });
 

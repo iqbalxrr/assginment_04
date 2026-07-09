@@ -13,7 +13,7 @@ export const getAll = asyncHandler(async (req: Request, res: Response) => {
   const result = await rentalService.getUserRentals(
     req.user!.id,
     req.user!.role,
-    req.query as never
+    (req.validatedQuery ?? req.query) as never
   );
   sendSuccess(res, 200, "Rental requests retrieved successfully", result);
 });
@@ -40,7 +40,7 @@ export const getLandlordRequests = asyncHandler(async (req: Request, res: Respon
   const result = await rentalService.getUserRentals(
     req.user!.id,
     req.user!.role,
-    req.query as never
+    (req.validatedQuery ?? req.query) as never
   );
   sendSuccess(res, 200, "Landlord rental requests retrieved successfully", result);
 });

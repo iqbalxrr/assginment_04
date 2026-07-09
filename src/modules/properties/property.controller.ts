@@ -5,7 +5,7 @@ import { sendSuccess } from "../../utils/response";
 import * as propertyService from "./property.service";
 
 export const getAll = asyncHandler(async (req: Request, res: Response) => {
-  const result = await propertyService.getProperties(req.query as never);
+  const result = await propertyService.getProperties((req.validatedQuery ?? req.query) as never);
   sendSuccess(res, 200, "Properties retrieved successfully", result);
 });
 
