@@ -10,7 +10,12 @@ import { notFound } from "./middleware/notFound";
 
 const app = express();
 
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+  })
+);
 app.use(cors());
 
 // Stripe webhook requires raw body for signature verification
@@ -56,7 +61,22 @@ app.get("/health", (_req, res) => {
   res.json({ success: true, message: "OK" });
 });
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get("/api-docs.json", (_req, res) => {
+  res.json(swaggerSpec);
+});
+
+app.get("/api-docs", (_req, res) => {
+  res.redirect(301, "/api-docs/");
+});
+
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    explorer: true,
+    customSiteTitle: "RentNest API Docs",
+  })
+);
 app.use("/api", routes);
 
 app.use(notFound);

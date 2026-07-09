@@ -2,6 +2,18 @@ import path from "path";
 import swaggerJsdoc from "swagger-jsdoc";
 import { env } from "./env";
 
+const getServerUrl = () => {
+  if (process.env.API_BASE_URL) {
+    return process.env.API_BASE_URL.replace(/\/$/, "");
+  }
+
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+
+  return `http://localhost:${env.PORT}`;
+};
+
 const options: swaggerJsdoc.Options = {
   definition: {
     openapi: "3.0.0",
@@ -16,8 +28,8 @@ const options: swaggerJsdoc.Options = {
     },
     servers: [
       {
-        url: `http://localhost:${env.PORT}`,
-        description: "Development server",
+        url: getServerUrl(),
+        description: env.NODE_ENV === "production" ? "Production server" : "Development server",
       },
     ],
     components: {
