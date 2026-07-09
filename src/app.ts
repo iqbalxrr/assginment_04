@@ -1,12 +1,39 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
-import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./config/swagger";
 import routes from "./routes";
 import { stripeWebhook } from "./modules/payments/payment.controller";
 import { errorHandler } from "./middleware/errorHandler";
 import { notFound } from "./middleware/notFound";
+
+const swaggerHtml = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>RentNest API Docs</title>
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css" />
+    <style>
+      body { margin: 0; background: #fafafa; }
+    </style>
+  </head>
+  <body>
+    <div id="swagger-ui"></div>
+    <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-standalone-preset.js"></script>
+    <script>
+      window.onload = function () {
+        window.ui = SwaggerUIBundle({
+          url: "/api-docs.json",
+          dom_id: "#swagger-ui",
+          deepLinking: true,
+          presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+          layout: "StandaloneLayout",
+        });
+      };
+    </script>
+  </body>
+</html>`;
 
 const app = express();
 
@@ -65,18 +92,13 @@ app.get("/api-docs.json", (_req, res) => {
   res.json(swaggerSpec);
 });
 
-app.get("/api-docs", (_req, res) => {
-  res.redirect(301, "/api-docs/");
-});
+const serveSwaggerDocs = (_req: express.Request, res: express.Response) => {
+  res.type("html").send(swaggerHtml);
+};
 
-app.use(
-  "/api-docs",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec, {
-    explorer: true,
-    customSiteTitle: "RentNest API Docs",
-  })
-);
+app.get("/api-docs", serveSwaggerDocs);
+app.get("/api-docs/", serveSwaggerDocs);
+
 app.use("/api", routes);
 
 app.use(notFound);
